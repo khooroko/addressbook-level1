@@ -878,16 +878,25 @@ public class AddressBook {
      * @return constructed person
      */
     private static HashMap<PersonProperty, String> makePersonFromData(String name, String phone, String email) {
-        /*final String[] person = new String[PERSON_DATA_COUNT];
-        person[PERSON_DATA_INDEX_NAME] = name;
-        person[PERSON_DATA_INDEX_PHONE] = phone;
-        person[PERSON_DATA_INDEX_EMAIL] = email;
-        return person;*/
         HashMap<PersonProperty, String> person = new HashMap<>();
         person.put(PersonProperty.NAME, name);
         person.put(PersonProperty.PHONE, phone);
         person.put(PersonProperty.EMAIL, email);
         return person;
+    }
+
+    /**
+     * Creates a person from the given data.
+     *
+     * @param encoded data of person
+     * @return constructed person
+     */
+    private static HashMap<PersonProperty, String> makePersonFromEncodedData(String encoded){
+        return makePersonFromData(
+                extractNameFromPersonString(encoded),
+                extractPhoneFromPersonString(encoded),
+                extractEmailFromPersonString(encoded)
+        );
     }
 
     /**
@@ -934,11 +943,8 @@ public class AddressBook {
         if (!isPersonDataExtractableFrom(encoded)) {
             return Optional.empty();
         }
-        final HashMap<PersonProperty, String> decodedPerson = makePersonFromData(
-                extractNameFromPersonString(encoded),
-                extractPhoneFromPersonString(encoded),
-                extractEmailFromPersonString(encoded)
-        );
+        final HashMap<PersonProperty, String> decodedPerson = makePersonFromEncodedData(encoded);
+
         // check that the constructed person is valid
         return isPersonDataValid(decodedPerson) ? Optional.of(decodedPerson) : Optional.empty();
     }
