@@ -211,6 +211,7 @@ public class AddressBook {
         showWelcomeMessage();
         processProgramArgs(args);
         loadDataFromStorage();
+
         while (true) {
             String userCommand = getUserInput();
             echoUserCommand(userCommand);
@@ -369,6 +370,7 @@ public class AddressBook {
         final String[] commandTypeAndParams = splitCommandWordAndArgs(userInputString);
         final String commandType = commandTypeAndParams[0];
         final String commandArgs = commandTypeAndParams[1];
+
         switch (commandType) {
         case COMMAND_ADD_WORD:
             return executeAddPerson(commandArgs);
@@ -454,8 +456,11 @@ public class AddressBook {
      */
     private static String executeFindPersons(String commandArgs) {
         final Set<String> keywords = extractKeywordsFromFindPersonArgs(commandArgs);
-        final ArrayList<HashMap<PersonProperty, String>> personsFound = getPersonsWithNameContainingAnyKeyword(keywords);
+        final ArrayList<HashMap<PersonProperty, String>> personsFound =
+                getPersonsWithNameContainingAnyKeyword(keywords);
+
         showToUser(personsFound);
+
         return getMessageForPersonsDisplayedSummary(personsFound);
     }
 
@@ -465,8 +470,8 @@ public class AddressBook {
      * @param personsDisplayed used to generate summary
      * @return summary message for persons displayed
      */
-    private static String getMessageForPersonsDisplayedSummary(ArrayList<HashMap<PersonProperty,
-                    String>> personsDisplayed) {
+    private static String getMessageForPersonsDisplayedSummary(
+            ArrayList<HashMap<PersonProperty, String>> personsDisplayed) {
         return String.format(MESSAGE_PERSONS_FOUND_OVERVIEW, personsDisplayed.size());
     }
 
@@ -489,12 +494,14 @@ public class AddressBook {
     private static ArrayList<HashMap<PersonProperty, String>>
             getPersonsWithNameContainingAnyKeyword(Collection<String> keywords) {
         final ArrayList<HashMap<PersonProperty, String>> matchedPersons = new ArrayList<>();
+
         for (HashMap<PersonProperty, String> person : getAllPersonsInAddressBook()) {
             final Set<String> wordsInName = new HashSet<>(splitByWhitespace(getNameFromPerson(person)));
             if (!Collections.disjoint(wordsInName, keywords)) {
                 matchedPersons.add(person);
             }
         }
+
         return matchedPersons;
     }
 
@@ -508,10 +515,12 @@ public class AddressBook {
         if (!isDeletePersonArgsValid(commandArgs)) {
             return getMessageForInvalidCommandInput(COMMAND_DELETE_WORD, getUsageInfoForDeleteCommand());
         }
+
         final int targetVisibleIndex = extractTargetIndexFromDeletePersonArgs(commandArgs);
         if (!isDisplayIndexValidForLastPersonListingView(targetVisibleIndex)) {
             return MESSAGE_INVALID_PERSON_DISPLAYED_INDEX;
         }
+
         final HashMap<PersonProperty, String> targetInModel = getPersonByLastVisibleIndex(targetVisibleIndex);
         return deletePersonFromAddressBook(targetInModel) ? getMessageForSuccessfulDelete(targetInModel) // success
                                                           : MESSAGE_PERSON_NOT_IN_ADDRESSBOOK; // not found
@@ -636,6 +645,8 @@ public class AddressBook {
 
     /**
      * Shows a message to the user
+     *
+     * @param messages to be shown
      */
 
     private static void showToUser(String... messages) {
@@ -648,6 +659,7 @@ public class AddressBook {
      * Shows the list of persons to the user.
      * The list will be indexed, starting from 1.
      *
+     * @param persons list
      */
     private static void showToUser(ArrayList<HashMap<PersonProperty, String>> persons) {
         String listAsString = getDisplayString(persons);
@@ -656,7 +668,7 @@ public class AddressBook {
     }
 
     /**
-     * Returns the display string representation of the list of persons.
+     * @return the display string representation of the list of persons.
      */
     private static String getDisplayString(ArrayList<HashMap<PersonProperty, String>> persons) {
         final StringBuilder messageAccumulator = new StringBuilder();
@@ -678,7 +690,8 @@ public class AddressBook {
      * @return formatted listing message with index
      */
     private static String getIndexedPersonListElementMessage(int visibleIndex, HashMap<PersonProperty, String> person) {
-        return String.format(MESSAGE_DISPLAY_LIST_ELEMENT_INDEX, visibleIndex) + getMessageForFormattedPersonData(person);
+        return String.format(MESSAGE_DISPLAY_LIST_ELEMENT_INDEX, visibleIndex) +
+                getMessageForFormattedPersonData(person);
     }
 
     /**
@@ -734,6 +747,12 @@ public class AddressBook {
         createFile(filePath, storageFile);
     }
 
+    /**
+     * Creates storage file. Shows feedback to user.
+     *
+     * @param filePath file to create
+     * @param storageFile
+     */
     private static void createFile(String filePath, File storageFile) {
         try {
             storageFile.createNewFile();
@@ -764,6 +783,9 @@ public class AddressBook {
     /**
      * Gets all lines in the specified file as a list of strings. Line separators are removed.
      * Shows error messages and exits program if unable to read from file.
+     *
+     * @param filePath file to load from
+     * @return lines in file as an ArrayList of Strings
      */
     private static ArrayList<String> getLinesInFile(String filePath) {
         ArrayList<String> lines = null;
@@ -850,6 +872,9 @@ public class AddressBook {
         ALL_PERSONS.addAll(persons);
     }
 
+    /**
+     * Sorts the address book by names of persons.
+     */
     private static void sortAddressBookByName() {
         Collections.sort(ALL_PERSONS, new PersonCompare());
     }
@@ -865,6 +890,7 @@ public class AddressBook {
      * Returns the given person's name
      *
      * @param person whose name you want
+     * @return name of the specified person
      */
     private static String getNameFromPerson(HashMap<PersonProperty, String> person) {
         return person.get(PersonProperty.NAME);
@@ -874,6 +900,7 @@ public class AddressBook {
      * Returns given person's phone number
      *
      * @param person whose phone number you want
+     * @return phone number of person
      */
     private static String getPhoneFromPerson(HashMap<PersonProperty, String> person) {
         return person.get(PersonProperty.PHONE);
@@ -883,6 +910,7 @@ public class AddressBook {
      * Returns given person's email
      *
      * @param person whose email you want
+     * @return email of person
      */
     private static String getEmailFromPerson(HashMap<PersonProperty, String> person) {
         return person.get(PersonProperty.EMAIL);
@@ -993,6 +1021,7 @@ public class AddressBook {
      * Format is [name] p/[phone] e/[email], phone and email positions can be swapped.
      *
      * @param personData person string representation
+     * @return true if person data can be extracted
      */
     private static boolean isPersonDataExtractableFrom(String personData) {
         final String matchAnyPersonDataPrefix = PERSON_DATA_PREFIX_PHONE + '|' + PERSON_DATA_PREFIX_EMAIL;
@@ -1004,7 +1033,7 @@ public class AddressBook {
     }
 
     /**
-     * Extracts substring representing person name from person string representation
+     * Extracts substring representing person name from person string representation.
      *
      * @param encoded person string representation
      * @return name argument
@@ -1018,7 +1047,7 @@ public class AddressBook {
     }
 
     /**
-     * Extracts substring representing phone number from person string representation
+     * Extracts substring representing phone number from person string representation.
      *
      * @param encoded person string representation
      * @return phone number argument WITHOUT prefix
@@ -1041,7 +1070,7 @@ public class AddressBook {
     }
 
     /**
-     * Extracts substring representing email from person string representation
+     * Extracts substring representing email from person string representation.
      *
      * @param encoded person string representation
      * @return email argument WITHOUT prefix
@@ -1064,9 +1093,10 @@ public class AddressBook {
     }
 
     /**
-     * Returns true if the given person's data fields are valid
+     * Returns true if the given person's data fields are valid.
      *
      * @param person String array representing the person (used in internal data)
+     * @return true if the given person's data fields are valid
      */
     private static boolean isPersonDataValid(HashMap<PersonProperty, String> person) {
         return isPersonNameValid(person.get(PersonProperty.NAME))
@@ -1083,9 +1113,10 @@ public class AddressBook {
      */
 
     /**
-     * Returns true if the given string as a legal person name
+     * Returns true if the given string is a legal person name.
      *
      * @param name to be validated
+     * @return true if arg is a valid person name
      */
     private static boolean isPersonNameValid(String name) {
         return name.matches("(\\w|\\s)+");  // name is nonempty mixture of alphabets and whitespace
@@ -1093,9 +1124,10 @@ public class AddressBook {
     }
 
     /**
-     * Returns true if the given string as a legal person phone number
+     * Returns true if the given string is a legal person phone number.
      *
      * @param phone to be validated
+     * @return true if arg is a valid person phone number
      */
     private static boolean isPersonPhoneValid(String phone) {
         return phone.matches("\\d+");    // phone nonempty sequence of digits
@@ -1103,10 +1135,10 @@ public class AddressBook {
     }
 
     /**
-     * Returns true if the given string is a legal person email
+     * Returns true if the given string is a legal person email.
      *
      * @param email to be validated
-     * @return whether arg is a valid person email
+     * @return true if arg is a valid person email
      */
     private static boolean isPersonEmailValid(String email) {
         return email.matches("\\S+@\\S+\\.\\S+"); // email is [non-whitespace]@[non-whitespace].[non-whitespace]
@@ -1118,6 +1150,13 @@ public class AddressBook {
      */
     static class PersonCompare implements Comparator<HashMap<PersonProperty, String>> {
 
+        /**
+         * Compares two persons
+         *
+         * @param person1 first person
+         * @param person2 second person to be compared to first
+         * @return int value of compareTo. Negative if person1 should come before person2 in an ordering
+         */
         @Override
         public int compare(HashMap<PersonProperty, String> person1, HashMap<PersonProperty, String> person2) {
             return person1.get(PersonProperty.NAME).compareToIgnoreCase(person2.get(PersonProperty.NAME));
