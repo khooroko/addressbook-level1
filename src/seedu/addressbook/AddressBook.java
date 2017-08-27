@@ -630,6 +630,16 @@ public class AddressBook {
         System.out.print(LINE_PREFIX + "Enter command: ");
         String inputLine = SCANNER.nextLine();
         // silently consume all blank and comment lines
+        return clearInputLine(inputLine);
+    }
+
+    /**
+     * Consumes all blank and comment lines in input line.
+     *
+     * @param inputLine user input
+     * @return cleared input line
+     */
+    private static String clearInputLine(String inputLine) {
         while (inputLine.trim().isEmpty() || inputLine.trim().charAt(0) == INPUT_COMMENT_MARKER) {
             inputLine = SCANNER.nextLine();
         }
