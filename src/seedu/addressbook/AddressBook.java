@@ -65,6 +65,8 @@ public class AddressBook {
     private static final String MESSAGE_COMMAND_HELP_EXAMPLE = "\tExample: %1$s";
     private static final String MESSAGE_DELETE_PERSON_SUCCESS = "Deleted Person: %1$s";
     private static final String MESSAGE_DISPLAY_PERSON_DATA = "%1$s  Phone Number: %2$s  Email: %3$s";
+    private static final String MESSAGE_SORT_SUCCESS = "Address book successfully sorted!";
+    private static final String MESSAGE_FAILURE_EMPTY_BOOK = "Command failed; address book is empty.";
     private static final String MESSAGE_DISPLAY_LIST_ELEMENT_INDEX = "%1$d. ";
     private static final String MESSAGE_GOODBYE = "Exiting Address Book... Good bye!";
     private static final String MESSAGE_INVALID_COMMAND_FORMAT = "Invalid command format: %1$s " + LS + "%2$s";
@@ -114,6 +116,11 @@ public class AddressBook {
     private static final String COMMAND_DELETE_PARAMETER = "INDEX";
     private static final String COMMAND_DELETE_EXAMPLE = COMMAND_DELETE_WORD + " 1";
 
+    private static final String COMMAND_SORT_WORD = "sort";
+    private static final String COMMAND_SORT_DESC = "Sorts the persons in the address book by name.";
+    private static final String COMMAND_SORT_EXAMPLE = COMMAND_SORT_WORD;
+
+
     private static final String COMMAND_CLEAR_WORD = "clear";
     private static final String COMMAND_CLEAR_DESC = "Clears address book permanently.";
     private static final String COMMAND_CLEAR_EXAMPLE = COMMAND_CLEAR_WORD;
@@ -128,28 +135,11 @@ public class AddressBook {
 
     private static final String DIVIDER = "===================================================";
 
-    /* We use a String array to store details of a single person.
-     * The constants given below are the indexes for the different data elements of a person
-     * used by the internal String[] storage format.
-     * For example, a person's name is stored as the 0th element in the array.
-     */
-    /*
-    private static final int PERSON_DATA_INDEX_NAME = 0;
-    private static final int PERSON_DATA_INDEX_PHONE = 1;
-    private static final int PERSON_DATA_INDEX_EMAIL = 2;
-    */
-
-    /* We use an enum to store data of a person.
+    /**
+     * We use an enum to store data of a person.
      * A hashmap containing name and phone number, and a String containing email.
      */
-    private enum PersonProperty {NAME, EMAIL, PHONE};
-
-    /**
-     * The number of data elements for a single person.
-     */
-    /*
-    private static final int PERSON_DATA_COUNT = 3;
-    */
+    private enum PersonProperty {NAME, EMAIL, PHONE}
 
     /**
      * Offset required to convert between 1-indexing and 0-indexing.COMMAND_
@@ -161,7 +151,7 @@ public class AddressBook {
      */
     private static final char INPUT_COMMENT_MARKER = '#';
 
-    /*
+    /**
      * This variable is declared for the whole class (instead of declaring it
      * inside the readUserCommand() method to facilitate automated testing using
      * the I/O redirection technique. If not, only the first line of the input
@@ -379,6 +369,8 @@ public class AddressBook {
             return executeListAllPersonsInAddressBook();
         case COMMAND_DELETE_WORD:
             return executeDeletePerson(commandArgs);
+        case COMMAND_SORT_WORD:
+            return executeSortByName();
         case COMMAND_CLEAR_WORD:
             return executeClearAddressBook();
         case COMMAND_HELP_WORD:
@@ -514,6 +506,20 @@ public class AddressBook {
         final HashMap<PersonProperty, String> targetInModel = getPersonByLastVisibleIndex(targetVisibleIndex);
         return deletePersonFromAddressBook(targetInModel) ? getMessageForSuccessfulDelete(targetInModel) // success
                                                           : MESSAGE_PERSON_NOT_IN_ADDRESSBOOK; // not found
+    }
+
+    /**
+     * Sorts address book by name.
+     *
+     * @return feedback display message for the operation result
+     */
+    private static String executeSortByName() {
+        if (ALL_PERSONS.isEmpty()) {
+            return MESSAGE_FAILURE_EMPTY_BOOK;
+        } else {
+            sortAddressBookByName();
+            return MESSAGE_SORT_SUCCESS;
+        }
     }
 
     /**
@@ -835,6 +841,10 @@ public class AddressBook {
         ALL_PERSONS.addAll(persons);
     }
 
+    private static void sortAddressBookByName() {
+        Collections.sort(ALL_PERSONS, new PersonCompare());
+    }
+
 
     /*
      * ===========================================
@@ -1094,6 +1104,17 @@ public class AddressBook {
         //TODO: implement a more permissive validation
     }
 
+    /**
+     * Comparator for comparing persons.
+     */
+    static class PersonCompare implements Comparator<HashMap<PersonProperty, String>> {
+
+        @Override
+        public int compare(HashMap<PersonProperty, String> person1, HashMap<PersonProperty, String> person2) {
+            return person1.get(PersonProperty.NAME).compareToIgnoreCase(person2.get(PersonProperty.NAME));
+        }
+    }
+
 
     /*
      * ===============================================
@@ -1107,6 +1128,7 @@ public class AddressBook {
                 + getUsageInfoForFindCommand() + LS
                 + getUsageInfoForViewCommand() + LS
                 + getUsageInfoForDeleteCommand() + LS
+                + getUsageInfoForSortCommand() + LS
                 + getUsageInfoForClearCommand() + LS
                 + getUsageInfoForExitCommand() + LS
                 + getUsageInfoForHelpCommand();
@@ -1131,6 +1153,12 @@ public class AddressBook {
         return String.format(MESSAGE_COMMAND_HELP, COMMAND_DELETE_WORD, COMMAND_DELETE_DESC) + LS
                 + String.format(MESSAGE_COMMAND_HELP_PARAMETERS, COMMAND_DELETE_PARAMETER) + LS
                 + String.format(MESSAGE_COMMAND_HELP_EXAMPLE, COMMAND_DELETE_EXAMPLE) + LS;
+    }
+
+    /** Returns the string for showing 'sort' command usage instruction */
+    private static String getUsageInfoForSortCommand() {
+        return String.format(MESSAGE_COMMAND_HELP, COMMAND_SORT_WORD, COMMAND_SORT_DESC) + LS
+                + String.format(MESSAGE_COMMAND_HELP_EXAMPLE, COMMAND_SORT_EXAMPLE) + LS;
     }
 
     /** Returns string for showing 'clear' command usage instruction */
