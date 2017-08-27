@@ -682,6 +682,18 @@ public class AddressBook {
      */
     private static String getDisplayString(ArrayList<HashMap<PersonProperty, String>> persons) {
         final StringBuilder messageAccumulator = new StringBuilder();
+        accumulateDetailsInList(persons, messageAccumulator);
+        return messageAccumulator.toString();
+    }
+
+    /**
+     * Accumulates the details of persons into the messageAccumulator.
+     *
+     * @param persons list of persons
+     * @param messageAccumulator StringBuilder to append messages to
+     */
+    private static void accumulateDetailsInList(ArrayList<HashMap<PersonProperty, String>> persons,
+            StringBuilder messageAccumulator) {
         for (int i = 0; i < persons.size(); i++) {
             final HashMap<PersonProperty, String> person = persons.get(i);
             final int displayIndex = i + DISPLAYED_INDEX_OFFSET;
@@ -689,7 +701,6 @@ public class AddressBook {
                               .append(getIndexedPersonListElementMessage(displayIndex, person))
                               .append(LS);
         }
-        return messageAccumulator.toString();
     }
 
     /**
