@@ -211,13 +211,7 @@ public class AddressBook {
         showWelcomeMessage();
         processProgramArgs(args);
         loadDataFromStorage();
-
-        while (true) {
-            String userCommand = getUserInput();
-            echoUserCommand(userCommand);
-            String feedback = executeCommand(userCommand);
-            showResultToUser(feedback);
-        }
+        processUserInput();
     }
 
     /*
@@ -234,6 +228,20 @@ public class AddressBook {
 
     private static void showResultToUser(String result) {
         showToUser(result, DIVIDER);
+    }
+
+    /**
+     * Gets input from user.
+     * Echos user's command.
+     * Executes the command and shows feedback.
+     */
+    private static void processUserInput() {
+        while (true) {
+            String userCommand = getUserInput();
+            echoUserCommand(userCommand);
+            String feedback = executeCommand(userCommand);
+            showResultToUser(feedback);
+        }
     }
 
     /*
