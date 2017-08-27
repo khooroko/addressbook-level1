@@ -40,6 +40,8 @@
   list
   add Esther Potato p/555555 e/esther@notreal.potato
   list
+  add Abraham Lincoln p/666666 e/abelincoln@amail.com
+  list
 
 ##########################################################
 # test find persons command
@@ -60,6 +62,16 @@
   find Dickson
   # find multiple with some keywords
   find Charlie Betsy
+
+##########################################################
+# test sort persons command
+##########################################################
+
+  # should display successful sort message
+  sort
+
+  # should display a list sorted by name
+  list
 
 ##########################################################
 # test delete person command
@@ -98,6 +110,13 @@
   # clears all
   clear
   list
+
+##########################################################
+# test sort empty book
+##########################################################
+
+  # should display failure to sort
+  sort
 
 ##########################################################
 # test exit command
