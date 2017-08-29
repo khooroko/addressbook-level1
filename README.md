@@ -109,6 +109,10 @@ Examples:
   `delete 1`
   > Deletes the 1st person in the results of the `find` command.
 
+#### Sorting the address book: `sort`
+> Sorts the contacts in the address book by name.
+Format: `sort`
+
 #### Clearing all entries: `clear`
 > Clears all entries from the address book.  
 Format: `clear`  
