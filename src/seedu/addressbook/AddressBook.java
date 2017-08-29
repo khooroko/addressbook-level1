@@ -287,7 +287,6 @@ public class AddressBook {
      * Exits if the file name is not acceptable.
      */
     private static void setupGivenFileForStorage(String filePath) {
-
         if (!isValidFilePath(filePath)) {
             showToUser(String.format(MESSAGE_INVALID_FILE, filePath));
             exitProgram();
@@ -482,7 +481,6 @@ public class AddressBook {
             ArrayList<HashMap<PersonProperty, String>> personsDisplayed) {
         return String.format(MESSAGE_PERSONS_FOUND_OVERVIEW, personsDisplayed.size());
     }
-
     /**
      * Extracts keywords from the command arguments given for the find persons command.
      *
@@ -637,7 +635,7 @@ public class AddressBook {
     private static String getUserInput() {
         System.out.print(LINE_PREFIX + "Enter command: ");
         String inputLine = SCANNER.nextLine();
-        // silently consume all blank and comment lines
+
         return clearInputLine(inputLine);
     }
 
@@ -801,7 +799,7 @@ public class AddressBook {
      */
     private static ArrayList<HashMap<PersonProperty, String>> loadPersonsFromFile(String filePath) {
         final Optional<ArrayList<HashMap<PersonProperty, String>>> successfullyDecoded =
-                        decodePersonsFromStrings(getLinesInFile(filePath));
+                decodePersonsFromStrings(getLinesInFile(filePath));
         if (!successfullyDecoded.isPresent()) {
             showToUser(MESSAGE_INVALID_STORAGE_FILE_CONTENT);
             exitProgram();
@@ -955,10 +953,22 @@ public class AddressBook {
      */
     private static HashMap<PersonProperty, String> makePersonFromData(String name, String phone, String email) {
         HashMap<PersonProperty, String> person = new HashMap<>();
+        setPerson(person, name, phone, email);
+        return person;
+    }
+
+    /**
+     * Sets properties of a person from given data.
+     *
+     * @param person target person to set data to
+     * @param name of person
+     * @param phone without data prefix
+     * @param email without data prefix
+     */
+    private static void setPerson(HashMap<PersonProperty, String> person, String name, String phone, String email) {
         person.put(PersonProperty.NAME, name);
         person.put(PersonProperty.PHONE, phone);
         person.put(PersonProperty.EMAIL, email);
-        return person;
     }
 
     /**
